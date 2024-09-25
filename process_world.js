@@ -119,7 +119,7 @@ function GuessFunc() {
   }
   ix = argMax(ratios);
   //seuil à ajuster
-  if(ratios[ix]<82){
+  if(ratios[ix]<90){
     document.getElementById('warn').innerHTML = 'Unknown city !'    
   }
   else{
