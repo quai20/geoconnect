@@ -80,6 +80,8 @@ function StartFunc() {
 
   gameLayer.clearLayers();
   document.getElementById('warn').innerHTML = '';
+  document.getElementById('prop').value = '';
+
   score = 0;
   document.getElementById('score').innerHTML = score;
   //get difficulty
@@ -128,6 +130,7 @@ function GuessFunc() {
       var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:greenIcon}).addTo(gameLayer);
       markerc.bindTooltip(names[ix]);
       circle.setLatLng(new L.LatLng(lats[ix], lons[ix]));
+      var line = new L.polyline([new L.LatLng(lats[current],lons[current]), new L.LatLng(lats[ix],lons[ix])]).addTo(gameLayer);
       current = ix;
       //Check if endpoint is the new circle 
       var e = HavDist(lats[ix],lats[b],lons[ix],lons[b]);
