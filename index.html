@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+    <title> GeoConnect </title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <center>
+    <h1>GeoConnect</h1>
+    <div id="map"></div>
+    <br>
+    <div id="wrapper">
+        Difficulty (km) : 
+        <input type="number" id="difficulty" name="difficulty" min="50" max="300" value="150" />                        
+        <button type="button" onclick="StartFunc()">Start</button>
+        <br><br>
+        Connection :
+        <input type="text" id="prop" name="prop" required minlength="2" maxlength="50" size="20" />          
+        <button type="button" onclick="GuessFunc()">Guess</button>
+        <br><br>
+        Score : <a id='score'>0</a>
+        <br><br>
+        <a id='warn'></a>
+    </div>
+    </center>
+    <!--leaflet & jquery-->
+    <script src="dist/jquery-3.7.1.min.js"></script>
+    <script src="dist/jquery.csv.min.js"></script>
+    <link rel="stylesheet" href="dist/leaflet/leaflet.css" />
+    <script src="dist/leaflet/leaflet.js"></script>
+
+    <!-- fuzz string matching -->
+    <script charset="UTF-8" src="dist/fuzzball_lite.umd.min.js"></script>
+
+    <!--process-->
+    <link rel="stylesheet" href="process.css" />
+    <script src="process.js"></script>
+
+</body>
+
+</html>

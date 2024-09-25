@@ -1,0 +1,173 @@
+function initDemoMap() {
+  //BASE TILE LAYER 1
+  var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  });
+  //MAP STRUCTURE
+  var map = L.map('map', {
+    layers: [CartoDB_PositronNoLabels],
+    minZoom: 3,
+    worldCopyJump: true,
+    inertia: false
+  });
+
+  map.setView([47.0, 2.5], 6);
+
+  //INIT RETURN FUNCTION
+  return {
+    map: map,
+  };
+}
+
+// MAP CREATION
+var mapStuff = initDemoMap();
+var map = mapStuff.map;
+var gameLayer = new L.LayerGroup();
+gameLayer.addTo(map);
+var cities;
+var names = [];
+var lats = [];
+var lons = [];
+var circle = new L.circle(new L.LatLng(0, 0), radius = 0, {color:'blue'});
+
+var difficulty = document.getElementById('difficulty').value;
+var score = 0;
+var current;
+var a;
+var b;
+var prop;
+
+var greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+var blueIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+var redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+//Load data
+$.get("cities.csv", function (data) {
+  cities = data.split("\n");
+  for (var i = 0; i < cities.length; i++) {
+    names.push(cities[i].split(",")[0]);
+    lats.push(cities[i].split(",")[1]);
+    lons.push(cities[i].split(",")[2]);
+  };
+});
+
+function StartFunc() {  
+
+  gameLayer.clearLayers();
+  document.getElementById('warn').innerHTML = '';
+  score = 0;
+  document.getElementById('score').innerHTML = score;
+  //get difficulty
+  difficulty = document.getElementById('difficulty').value;
+  //get cities
+  var dis = 0
+  while (dis < 400) {
+    a = getRandomInt(names.length);
+    b = getRandomInt(names.length);
+    dis = HavDist(lats[a], lats[b], lons[a], lons[b]);
+    current = a
+  }
+
+  //Draw
+  var markera = new L.Marker(new L.LatLng(lats[a], lons[a]),{title:names[a],icon:greenIcon}).addTo(gameLayer);
+  markera.bindTooltip(names[a]);
+  var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]),{title:names[b],icon:blueIcon}).addTo(gameLayer);
+  markerb.bindTooltip(names[b]);
+  circle.setLatLng(new L.LatLng(lats[a], lons[a]));
+  circle.setRadius(difficulty*1000);
+  circle.addTo(map);
+}
+
+function GuessFunc() {
+
+  //Get prop
+  prop = document.getElementById('prop').value;
+  //get fuzz ration with every city
+  var ratios=[]
+  for (var i = 0; i<names.length; i++){
+    ratios[i] = fuzzball.ratio(prop, names[i]);
+  }
+  ix = argMax(ratios);
+  //seuil à ajuster
+  if(ratios[ix]<82){
+    document.getElementById('warn').innerHTML = 'Unknown city !'    
+  }
+  else{
+    document.getElementById('warn').innerHTML = names[ix];
+    score = score+1;
+    document.getElementById('score').innerHTML = score;
+    //distance
+    var d = HavDist(lats[ix],lats[current],lons[ix],lons[current]);
+    if(d<difficulty){
+      //draw green if inside circle and move circle
+      var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:greenIcon}).addTo(gameLayer);
+      markerc.bindTooltip(names[ix]);
+      circle.setLatLng(new L.LatLng(lats[ix], lons[ix]));
+      current = ix;
+      //Check if endpoint is the new circle 
+      var e = HavDist(lats[ix],lats[b],lons[ix],lons[b]);
+      if(e<difficulty){
+        document.getElementById('warn').innerHTML = 'Well done !!';        
+        circle.remove();
+        var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty*1000, {color:'green'}).addTo(gameLayer);
+      }
+    }
+    else{
+      //Draw Red
+      var markerd = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:redIcon}).addTo(gameLayer);
+      markerd.bindTooltip(names[ix]);
+    }
+  }
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+function HavDist(lat1, lat2, lon1, lon2) {
+  var R = 6371; // km 
+  //has a problem with the .toRad() method below.
+  var x1 = lat2 - lat1;
+  var dLat = x1 * Math.PI / 180;
+  var x2 = lon2 - lon1;
+  var dLon = x2 * Math.PI / 180;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  return d;
+}
+
+function argMax(array) {
+  return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
