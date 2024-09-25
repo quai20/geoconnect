@@ -63,6 +63,12 @@ var redIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+//search index
+const index = new FlexSearch.Index({
+  preset: 'performance',            
+  tokenize: "full"                        
+});
+
 //Load data
 $.get("cities.csv", function (data) {
   cities = data.split("\n");
@@ -70,14 +76,39 @@ $.get("cities.csv", function (data) {
     names.push(cities[i].split(",")[0]);
     lats.push(cities[i].split(",")[1]);
     lons.push(cities[i].split(",")[2]);
+    index.add(i, cities[i].split(",")[0]);
   };
+
 });
+
+var suggestions = document.getElementById("suggestions");
+var userinput = document.getElementById("userinput");
+userinput.addEventListener("input", show_results, true);
+
+function show_results() {
+  var value = this.value;
+  var results = index.search(value);
+  //console.log(results);
+  var entry, childs = suggestions.childNodes;
+  var i = 0, len = results.length;
+
+  for (; i < len; i++) {
+      entry = childs[i];
+      if (!entry) {
+          entry = document.createElement("div");
+          suggestions.appendChild(entry);
+      }
+      entry.textContent = names[results[i]];
+  }
+  while (childs.length > len) {
+      suggestions.removeChild(childs[i])
+  }
+}   
 
 function StartFunc() {  
 
   gameLayer.clearLayers();
-  document.getElementById('warn').innerHTML = '';
-  document.getElementById('prop').value = '';
+  document.getElementById('userinput').value = '';
 
   score = 0;
   document.getElementById('score').innerHTML = score;
@@ -105,7 +136,7 @@ function StartFunc() {
 function GuessFunc() {
 
   //Get prop
-  prop = document.getElementById('prop').value;
+  prop = document.getElementById('userinput').value;
   //get fuzz ration with every city
   var ratios=[]
   for (var i = 0; i<names.length; i++){
@@ -114,10 +145,10 @@ function GuessFunc() {
   ix = argMax(ratios);
   //seuil à ajuster
   if(ratios[ix]<85){
-    document.getElementById('warn').innerHTML = 'Unknown city !'    
+    console.log('Unknown city !');
   }
   else{
-    document.getElementById('warn').innerHTML = names[ix];
+    //console.log(names[ix]);
     score = score+1;
     document.getElementById('score').innerHTML = score;
     //distance
@@ -166,8 +197,4 @@ function HavDist(lat1, lat2, lon1, lon2) {
 
 function argMax(array) {
   return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }

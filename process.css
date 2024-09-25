@@ -35,12 +35,22 @@ h1 {
     opacity: 0.55;
 }
 
-#wrapper {
-    position: relative;    
+#suggestions {
+    position: relative;
+    top: 10px; 
+    bottom: 10px;
 }
-/* #btn-spin {
-    position: absolute;
-    left: 200px;
-    z-index: 10;
-    font-size: 1.5em;      
-  } */
+
+#suggestions div {
+    width: 300px;
+    background-color: rgb(255, 255, 255);
+    padding: 5px 0;
+    margin: 0 8px;
+    border-bottom: 1px solid rgb(31, 28, 28);
+    overflow: scroll;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: 'Lucida Sans', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}

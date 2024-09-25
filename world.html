@@ -20,13 +20,14 @@
         <input type="number" id="difficulty" name="difficulty" min="50" max="2000" value="1000" />                        
         <button type="button" onclick="StartFunc()">Start</button>
         <br><br>
-        Connection :
-        <input type="text" id="prop" name="prop" required minlength="2" maxlength="50" size="20" />          
-        <button type="button" onclick="GuessFunc()">Guess</button>
-        <br><br>
         Score : <a id='score'>0</a>
         <br><br>
-        <a id='warn'></a>
+        Connection :        
+        <!-- <input type="text" id="prop" name="prop" required minlength="2" maxlength="50" size="20" />           -->
+        <input type="text" id="userinput" placeholder="...">
+        <button type="button" onclick="GuessFunc()">Guess</button>        
+        <br>
+        <div id="suggestions" style="overflow-y: scroll; height: 200px;"></div>
     </div>
     </center>
     <!--leaflet & jquery-->
@@ -34,7 +35,9 @@
     <script src="dist/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="dist/leaflet/leaflet.css" />
     <script src="dist/leaflet/leaflet.js"></script>
-
+    
+    <!-- flex search -->
+    <script src="dist/flexsearch.bundle.js"></script>
     <!-- fuzz string matching -->
     <script charset="UTF-8" src="dist/fuzzball_lite.umd.min.js"></script>
 
