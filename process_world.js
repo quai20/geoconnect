@@ -6,7 +6,7 @@ function initDemoMap() {
     maxZoom: 20
   });
   //MAP STRUCTURE
-  var map = L.map('worldmap', {
+  var map = L.map('map', {
     layers: [CartoDB_PositronNoLabels],
     minZoom: 3,
     worldCopyJump: true,
@@ -138,6 +138,10 @@ function StartFunc() {
   circle.addTo(map);
 
   map.panTo(new L.LatLng(lats[a], lons[a]));
+
+   //Fill div
+   document.getElementById('startV').innerHTML = names[a];
+   document.getElementById('endV').innerHTML = names[b];
   
 }
 

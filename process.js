@@ -137,6 +137,10 @@ function StartFunc() {
   circle.setLatLng(new L.LatLng(lats[a], lons[a]));
   circle.setRadius(difficulty * 1000);
   circle.addTo(map);
+
+  //Fill div
+  document.getElementById('startV').innerHTML = names[a];
+  document.getElementById('endV').innerHTML = names[b];
 }
 
 function GuessFunc() {
