@@ -1,13 +1,13 @@
 function initDemoMap() {
   //BASE TILE LAYER 1
-  var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 20
-  });
+  var CartoDB_VoyagerNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
+});
   //MAP STRUCTURE
   var map = L.map('map', {
-    layers: [CartoDB_PositronNoLabels],
+    layers: [CartoDB_VoyagerNoLabels],
     minZoom: 3,
     worldCopyJump: true,
     inertia: false
@@ -207,3 +207,8 @@ function HavDist(lat1, lat2, lon1, lon2) {
 function argMax(array) {
   return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }
+
+//reshape map
+document.addEventListener("DOMContentLoaded", (event) => {
+  map.invalidateSize();
+});

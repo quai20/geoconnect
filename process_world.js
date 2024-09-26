@@ -210,3 +210,8 @@ function HavDist(lat1, lat2, lon1, lon2) {
 function argMax(array) {
   return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }
+
+//reshape map
+document.addEventListener("DOMContentLoaded", (event) => {
+  map.invalidateSize();
+});
