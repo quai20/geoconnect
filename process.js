@@ -168,8 +168,7 @@ function GuessFunc() {
       current = ix;
       //Check if endpoint is the new circle 
       var e = HavDist(lats[ix], lats[b], lons[ix], lons[b]);
-      if (e < difficulty) {
-        document.getElementById('warn').innerHTML = 'Well done !!';
+      if (e < difficulty) {        
         circle.remove();
         var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty * 1000, { color: 'green' }).addTo(gameLayer);
       }
