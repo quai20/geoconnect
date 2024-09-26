@@ -96,7 +96,7 @@ function show_results() {
     entry = childs[i];
     if (!entry) {
       entry = document.createElement("div");
-      entry.className = 'suggestion-bk';      
+      entry.className = 'suggestion-bk';
       suggestions.appendChild(entry);
     }
     entry.textContent = names[results[i]];
@@ -172,7 +172,7 @@ function GuessFunc() {
       current = ix;
       //Check if endpoint is the new circle 
       var e = HavDist(lats[ix], lats[b], lons[ix], lons[b]);
-      if (e < difficulty) {        
+      if (e < difficulty) {
         circle.remove();
         var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty * 1000, { color: 'green' }).addTo(gameLayer);
       }
