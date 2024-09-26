@@ -30,7 +30,7 @@ var cities;
 var names = [];
 var lats = [];
 var lons = [];
-var circle = new L.circle(new L.LatLng(0, 0), radius = 0, {color:'blue'});
+var circle = new L.circle(new L.LatLng(0, 0), radius = 0, { color: 'blue' });
 
 var difficulty = document.getElementById('difficulty').value;
 var score = 0;
@@ -40,7 +40,7 @@ var b;
 var prop;
 
 var greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',  
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -48,7 +48,7 @@ var greenIcon = new L.Icon({
 });
 
 var blueIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',  
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -56,7 +56,7 @@ var blueIcon = new L.Icon({
 });
 
 var redIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',  
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -65,8 +65,8 @@ var redIcon = new L.Icon({
 
 //search index
 const index = new FlexSearch.Index({
-  preset: 'performance',            
-  tokenize: "full"                        
+  preset: 'performance',
+  tokenize: "full"
 });
 
 //Load data
@@ -93,22 +93,28 @@ function show_results() {
   var i = 0, len = results.length;
 
   for (; i < len; i++) {
-      entry = childs[i];
-      if (!entry) {
-          entry = document.createElement("div");
-          suggestions.appendChild(entry);
-      }
-      entry.textContent = names[results[i]];
+    entry = childs[i];
+    if (!entry) {
+      entry = document.createElement("div");
+      entry.className = 'suggestion-bk';      
+      suggestions.appendChild(entry);
+    }
+    entry.textContent = names[results[i]];
+    entry.onclick = function () {
+      console.log(this.textContent);
+      document.getElementById('userinput').value = this.textContent;
+    };
   }
   while (childs.length > len) {
-      suggestions.removeChild(childs[i])
+    suggestions.removeChild(childs[i])
   }
-}   
+}
 
-function StartFunc() {  
+function StartFunc() {
 
   gameLayer.clearLayers();
   document.getElementById('userinput').value = '';
+  document.getElementById('suggestions').innerHTML = "";
 
   score = 0;
   document.getElementById('score').innerHTML = score;
@@ -124,12 +130,12 @@ function StartFunc() {
   }
 
   //Draw
-  var markera = new L.Marker(new L.LatLng(lats[a], lons[a]),{title:names[a],icon:greenIcon}).addTo(gameLayer);
+  var markera = new L.Marker(new L.LatLng(lats[a], lons[a]), { title: names[a], icon: greenIcon }).addTo(gameLayer);
   markera.bindTooltip(names[a]);
-  var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]),{title:names[b],icon:blueIcon}).addTo(gameLayer);
+  var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]), { title: names[b], icon: blueIcon }).addTo(gameLayer);
   markerb.bindTooltip(names[b]);
   circle.setLatLng(new L.LatLng(lats[a], lons[a]));
-  circle.setRadius(difficulty*1000);
+  circle.setRadius(difficulty * 1000);
   circle.addTo(map);
 }
 
@@ -138,39 +144,39 @@ function GuessFunc() {
   //Get prop
   prop = document.getElementById('userinput').value;
   //get fuzz ration with every city
-  var ratios=[]
-  for (var i = 0; i<names.length; i++){
+  var ratios = []
+  for (var i = 0; i < names.length; i++) {
     ratios[i] = fuzzball.ratio(prop, names[i]);
   }
   ix = argMax(ratios);
   //seuil à ajuster
-  if(ratios[ix]<85){
+  if (ratios[ix] < 85) {
     console.log('Unknown city !');
   }
-  else{
+  else {
     //console.log(names[ix]);
-    score = score+1;
+    score = score + 1;
     document.getElementById('score').innerHTML = score;
     //distance
-    var d = HavDist(lats[ix],lats[current],lons[ix],lons[current]);
-    if(d<difficulty){
+    var d = HavDist(lats[ix], lats[current], lons[ix], lons[current]);
+    if (d < difficulty) {
       //draw green if inside circle and move circle
-      var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:greenIcon}).addTo(gameLayer);
+      var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]), { title: names[ix], icon: greenIcon }).addTo(gameLayer);
       markerc.bindTooltip(names[ix]);
       circle.setLatLng(new L.LatLng(lats[ix], lons[ix]));
-      var line = new L.polyline([new L.LatLng(lats[current],lons[current]), new L.LatLng(lats[ix],lons[ix])]).addTo(gameLayer);
+      var line = new L.polyline([new L.LatLng(lats[current], lons[current]), new L.LatLng(lats[ix], lons[ix])]).addTo(gameLayer);
       current = ix;
       //Check if endpoint is the new circle 
-      var e = HavDist(lats[ix],lats[b],lons[ix],lons[b]);
-      if(e<difficulty){
-        document.getElementById('warn').innerHTML = 'Well done !!';        
+      var e = HavDist(lats[ix], lats[b], lons[ix], lons[b]);
+      if (e < difficulty) {
+        document.getElementById('warn').innerHTML = 'Well done !!';
         circle.remove();
-        var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty*1000, {color:'green'}).addTo(gameLayer);
+        var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty * 1000, { color: 'green' }).addTo(gameLayer);
       }
     }
-    else{
+    else {
       //Draw Red
-      var markerd = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:redIcon}).addTo(gameLayer);
+      var markerd = new L.Marker(new L.LatLng(lats[ix], lons[ix]), { title: names[ix], icon: redIcon }).addTo(gameLayer);
       markerd.bindTooltip(names[ix]);
     }
   }

@@ -23,6 +23,12 @@ h1 {
     width: 700px;    
 }
 
+#worldmap {    
+    position: relative;
+    height: 600px;
+    width: 1000px;    
+}
+
 .leaflet-tooltip {
     font-size: large;
 }
@@ -54,3 +60,7 @@ h1 {
     font-size: 14px;
     line-height: 20px;
 }
+
+.suggestion-bk:hover {
+    opacity: 0.5;
+  }

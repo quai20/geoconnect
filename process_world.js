@@ -6,7 +6,7 @@ function initDemoMap() {
     maxZoom: 20
   });
   //MAP STRUCTURE
-  var map = L.map('map', {
+  var map = L.map('worldmap', {
     layers: [CartoDB_PositronNoLabels],
     minZoom: 3,
     worldCopyJump: true,
@@ -94,10 +94,15 @@ function show_results() {
   for (; i < len; i++) {
       entry = childs[i];
       if (!entry) {
-          entry = document.createElement("div");
-          suggestions.appendChild(entry);
+        entry = document.createElement("div");
+        entry.className = 'suggestion-bk';      
+        suggestions.appendChild(entry);
       }
       entry.textContent = names[results[i]];
+      entry.onclick = function () {
+      console.log(this.textContent);
+      document.getElementById('userinput').value = this.textContent;
+    };
   }
   while (childs.length > len) {
       suggestions.removeChild(childs[i])
@@ -108,7 +113,8 @@ function StartFunc() {
 
   gameLayer.clearLayers();  
   document.getElementById('userinput').value = '';
-
+  document.getElementById('suggestions').innerHTML = "";
+  
   score = 0;
   document.getElementById('score').innerHTML = score;
   //get difficulty
