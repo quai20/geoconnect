@@ -40,7 +40,7 @@ var b;
 var prop;
 
 var greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',  
+  iconUrl: 'dist/icons/marker-icon-2x-green.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -48,7 +48,7 @@ var greenIcon = new L.Icon({
 });
 
 var blueIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',  
+  iconUrl: 'dist/icons/marker-icon-2x-blue.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -56,7 +56,7 @@ var blueIcon = new L.Icon({
 });
 
 var redIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',  
+  iconUrl: 'dist/icons/marker-icon-2x-red.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
