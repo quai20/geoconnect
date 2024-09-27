@@ -179,6 +179,7 @@ function GuessFunc() {
         document.getElementById('warn').innerHTML = 'Well done !!';        
         circle.remove();
         var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty*1000, {color:'green'}).addTo(gameLayer);
+        setTimeout("alert('Good Job !! Score : ' + String(score));", 1);
       }
     }
     else{
