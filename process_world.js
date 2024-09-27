@@ -203,7 +203,7 @@ function ChallengeFunc() {
   b = parseInt(challengecode.split('-')[1]);
   difficulty = parseInt(challengecode.split('-')[2]);  
 
-  if ((a < names.length) && (a > 0) && (b < names.length) && (b > 0) && (a != b) && (difficulty >= 50)) {
+  if ((a < names.length) && (a > 0) && (b < names.length) && (b > 0) && (a != b) && (difficulty >= 5)) {
     current=a;
     //Draw    
     var markera = new L.Marker(new L.LatLng(lats[a], lons[a]), { title: names[a], icon: greenIcon }).addTo(gameLayer);
