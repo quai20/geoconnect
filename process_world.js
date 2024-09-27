@@ -216,8 +216,7 @@ function ChallengeFunc() {
 
     //Fill div
     document.getElementById('startV').innerHTML = names[a];
-    document.getElementById('endV').innerHTML = names[b];
-    document.getElementById('difficulty'.value) = difficulty;
+    document.getElementById('endV').innerHTML = names[b];    
   }
   else{
     alert('Wrong Challenge Code');
