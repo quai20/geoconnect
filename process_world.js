@@ -1,13 +1,13 @@
 function initDemoMap() {
   //BASE TILE LAYER 1
-  var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  var CartoDB_VoyagerNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 20
   });
   //MAP STRUCTURE
   var map = L.map('map', {
-    layers: [CartoDB_PositronNoLabels],
+    layers: [CartoDB_VoyagerNoLabels],
     minZoom: 3,
     worldCopyJump: true,
     inertia: false
@@ -65,7 +65,7 @@ var redIcon = new L.Icon({
 
 //search index
 const index = new FlexSearch.Index({
-  preset: 'performance',            
+  preset: 'default',            
   tokenize: "full"                        
 });
 
@@ -142,7 +142,8 @@ function StartFunc() {
    //Fill div
    document.getElementById('startV').innerHTML = names[a];
    document.getElementById('endV').innerHTML = names[b];
-  
+   document.getElementById('challenge-code').value = genChallengeCode(a, b, difficulty);
+
 }
 
 function GuessFunc() {
@@ -188,6 +189,41 @@ function GuessFunc() {
   }
 }
 
+function ChallengeFunc() {
+
+  gameLayer.clearLayers();
+  document.getElementById('userinput').value = '';
+  document.getElementById('suggestions').innerHTML = "";
+
+  score = 0;
+  document.getElementById('score').innerHTML = score;
+  //parse Challenge code
+  var challengecode = document.getElementById('challenge-code').value;
+  a = parseInt(challengecode.split('-')[0]);
+  b = parseInt(challengecode.split('-')[1]);
+  difficulty = parseInt(challengecode.split('-')[2]);  
+
+  if ((a < names.length) && (a > 0) && (b < names.length) && (b > 0) && (a != b) && (difficulty >= 50)) {
+    current=a;
+    //Draw    
+    var markera = new L.Marker(new L.LatLng(lats[a], lons[a]), { title: names[a], icon: greenIcon }).addTo(gameLayer);
+    markera.bindTooltip(names[a]);
+    var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]), { title: names[b], icon: blueIcon }).addTo(gameLayer);
+    markerb.bindTooltip(names[b]);
+    circle.setLatLng(new L.LatLng(lats[a], lons[a]));
+    circle.setRadius(difficulty * 1000);
+    circle.addTo(map);
+
+    //Fill div
+    document.getElementById('startV').innerHTML = names[a];
+    document.getElementById('endV').innerHTML = names[b];
+    document.getElementById('difficulty'.value) = difficulty;
+  }
+  else{
+    alert('Wrong Challenge Code');
+  }
+}
+
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
@@ -209,6 +245,10 @@ function HavDist(lat1, lat2, lon1, lon2) {
 
 function argMax(array) {
   return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+}
+
+function genChallengeCode(a, b, d) {
+  return String(a) + '-' + String(b) + '-' + String(d);
 }
 
 //reshape map
