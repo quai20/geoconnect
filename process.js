@@ -70,7 +70,7 @@ const index = new FlexSearch.Index({
 });
 
 //Load data
-$.get("cities.csv", function (data) {
+$.get("FrCities.csv", function (data) {
   cities = data.split("\n");
   for (var i = 0; i < cities.length; i++) {
     names.push(cities[i].split(",")[0]);
