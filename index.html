@@ -26,6 +26,7 @@
                 <p>Difficulty (km) :</p>
                 <input type="number" id="difficulty" name="difficulty" min="50" max="300" value="150" />
                 <button type="button" onclick="StartFunc()">Start</button>
+                <button type="button" onclick="GiveUpPre()">Give Up</button>
                 <br><br>
                 <p style="color:green;">Start ● : </p>
                 <p id="startV"></p>
@@ -50,12 +51,15 @@
     <script src="dist/jquery-3.7.1.min.js"></script>
     <script src="dist/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="dist/leaflet/leaflet.css" />
-    <script src="dist/leaflet/leaflet.js"></script>   
+    <script src="dist/leaflet/leaflet.js"></script>
 
     <!-- flex search -->
     <script src="dist/flexsearch.bundle.js"></script>
     <!-- fuzz string matching -->
     <script charset="UTF-8" src="dist/fuzzball_lite.umd.min.js"></script>
+    <!-- spin -->
+    <script src="dist/Spin/spin.min.js" charset="utf-8"></script>
+    <script src="dist/Spin/leaflet.spin.min.js" charset="utf-8"></script>
 
     <!--process-->
     <script src="process.js"></script>
