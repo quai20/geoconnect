@@ -20,27 +20,6 @@ function initDemoMap() {
     map: map,
   };
 }
-//SPINNER OPTS
-var spopts = {
-  lines: 13, // The number of lines to draw
-  length: 38, // The length of each line
-  width: 17, // The line thickness
-  radius: 45, // The radius of the inner circle
-  scale: 1, // Scales overall size of the spinner
-  corners: 1, // Corner roundness (0..1)
-  speed: 1, // Rounds per second
-  rotate: 0, // The rotation offset
-  animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
-  direction: 1, // 1: clockwise, -1: counterclockwise
-  color: '#000000', // CSS color or array of colors
-  fadeColor: 'transparent', // CSS color or array of colors
-  top: '50%', // Top position relative to parent
-  left: '50%', // Left position relative to parent
-  shadow: '0 0 1px transparent', // Box-shadow for the lines
-  zIndex: 2000000000, // The z-index (defaults to 2e9)
-  className: 'spinner', // The CSS class to assign to the spinner
-  position: 'absolute', // Element positioning
-};
 
 // MAP CREATION
 var mapStuff = initDemoMap();
@@ -83,6 +62,15 @@ var redIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
+
+var yellowIcon = new L.Icon({
+  iconUrl: 'dist/icons/marker-icon-yellow.png',
+  iconSize: [12, 20],
+  iconAnchor: [6, 20],
+  popupAnchor: [1, -17],
+  shadowSize: [20, 20]
+});
+
 
 //search index
 const index = new FlexSearch.Index({
@@ -188,16 +176,22 @@ function GiveUp() {
       izr = searchCity(destination[0], destination[1], currenth, difficulty, th);
       if (izr < names.length) { break; }
     }
-    var markerh = new L.Marker(new L.LatLng(lats[izr], lons[izr])).addTo(gameLayer);
+    var markerh = new L.Marker(new L.LatLng(lats[izr], lons[izr]), { title: names[izr], icon: yellowIcon }).addTo(gameLayer);
     markerh.bindTooltip(names[izr]);
-    var lineh = new L.polyline([new L.LatLng(lats[currenth], lons[currenth]), new L.LatLng(lats[izr], lons[izr])]).addTo(gameLayer);
+    var lineh = new L.polyline([new L.LatLng(lats[currenth], lons[currenth]), new L.LatLng(lats[izr], lons[izr])], {
+      color: 'green',
+      weight: 2
+    }).addTo(gameLayer);
 
     currenth = izr;
   }
+  var linek = new L.polyline([new L.LatLng(lats[currenth], lons[currenth]), new L.LatLng(lats[b], lons[b])], {
+    color: 'green',
+    weight: 2
+  });    
   circle.remove();
-  var wincircle = new L.circle(new L.LatLng(lats[currenth], lons[currenth]), radius = difficulty * 1000, { color: 'green' })
-  wincircle.on("add", function () { map.spin(false); });
-  wincircle.addTo(gameLayer);
+  linek.on("add", function () { map.spin(false); });
+  linek.addTo(gameLayer);
 }
 
 function searchCity(lat1, lon1, currentg, difficulty, thresh) {

@@ -30,7 +30,7 @@ var cities;
 var names = [];
 var lats = [];
 var lons = [];
-var circle = new L.circle(new L.LatLng(0, 0), radius = 0, {color:'blue'});
+var circle = new L.circle(new L.LatLng(0, 0), radius = 0, { color: 'blue' });
 
 var difficulty = document.getElementById('difficulty').value;
 var score = 0;
@@ -63,10 +63,18 @@ var redIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+var yellowIcon = new L.Icon({
+  iconUrl: 'dist/icons/marker-icon-yellow.png',
+  iconSize: [12, 20],
+  iconAnchor: [6, 20],
+  popupAnchor: [1, -17],
+  shadowSize: [20, 20]
+});
+
 //search index
 const index = new FlexSearch.Index({
-  preset: 'default',            
-  tokenize: "full"                        
+  preset: 'default',
+  tokenize: "full"
 });
 
 //Load data
@@ -92,36 +100,36 @@ function show_results() {
   var i = 0, len = results.length;
 
   for (; i < len; i++) {
-      entry = childs[i];
-      if (!entry) {
-        entry = document.createElement("div");
-        entry.className = 'suggestion-bk';      
-        suggestions.appendChild(entry);
-      }
-      entry.textContent = names[results[i]];
-      entry.onclick = function () {
+    entry = childs[i];
+    if (!entry) {
+      entry = document.createElement("div");
+      entry.className = 'suggestion-bk';
+      suggestions.appendChild(entry);
+    }
+    entry.textContent = names[results[i]];
+    entry.onclick = function () {
       console.log(this.textContent);
       document.getElementById('userinput').value = this.textContent;
     };
   }
   while (childs.length > len) {
-      suggestions.removeChild(childs[i])
+    suggestions.removeChild(childs[i])
   }
-}   
+}
 
-function StartFunc() {  
+function StartFunc() {
 
-  gameLayer.clearLayers();  
+  gameLayer.clearLayers();
   document.getElementById('userinput').value = '';
   document.getElementById('suggestions').innerHTML = "";
-  
+
   score = 0;
   document.getElementById('score').innerHTML = score;
   //get difficulty
   difficulty = document.getElementById('difficulty').value;
   //get cities
   var dis = 0
-  while (dis < 2000 || dis > 6000) {    
+  while (dis < 2000 || dis > 6000) {
     a = getRandomInt(names.length);
     b = getRandomInt(names.length);
     dis = HavDist(lats[a], lats[b], lons[a], lons[b]);
@@ -129,61 +137,118 @@ function StartFunc() {
   }
 
   //Draw
-  var markera = new L.Marker(new L.LatLng(lats[a], lons[a]),{title:names[a],icon:greenIcon}).addTo(gameLayer);
+  var markera = new L.Marker(new L.LatLng(lats[a], lons[a]), { title: names[a], icon: greenIcon }).addTo(gameLayer);
   markera.bindTooltip(names[a]);
-  var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]),{title:names[b],icon:blueIcon}).addTo(gameLayer);
+  var markerb = new L.Marker(new L.LatLng(lats[b], lons[b]), { title: names[b], icon: blueIcon }).addTo(gameLayer);
   markerb.bindTooltip(names[b]);
   circle.setLatLng(new L.LatLng(lats[a], lons[a]));
-  circle.setRadius(difficulty*1000);
+  circle.setRadius(difficulty * 1000);
   circle.addTo(map);
 
   map.panTo(new L.LatLng(lats[a], lons[a]));
 
-   //Fill div
-   document.getElementById('startV').innerHTML = names[a];
-   document.getElementById('endV').innerHTML = names[b];
-   document.getElementById('challenge-code').value = genChallengeCode(a, b, difficulty);
+  //Fill div
+  document.getElementById('startV').innerHTML = names[a];
+  document.getElementById('endV').innerHTML = names[b];
+  document.getElementById('challenge-code').value = genChallengeCode(a, b, difficulty);
 
 }
+
+function GiveUpPre() {
+  map.spin(true, { lines: 15, length: 30, radius: 30, color: 'black' });
+  setTimeout(GiveUp, 500);
+}
+
+function GiveUp() {
+  //init
+  var izr = 0;
+  var currenth = a;
+  var brng = 0;
+  var destination = [0, 0];
+  // loop until goal is inside the circle
+  while (HavDist(lats[currenth], lats[b], lons[currenth], lons[b]) > difficulty) {
+    brng = bearing(lats[currenth], lats[b], lons[currenth], lons[b]);
+    destination = destVincenty(parseFloat(lats[currenth]), parseFloat(lons[currenth]), brng, difficulty * 1000);
+    // Find closest city to this point that remains in the circle
+    izr = 0;
+    for (let th = 1; th < 2000; th=th+10) {
+      izr = searchCity(destination[0], destination[1], currenth, difficulty, th);
+      if (izr < names.length) { break; }
+    }
+    var markerh = new L.Marker(new L.LatLng(lats[izr], lons[izr]), { title: names[izr], icon: yellowIcon }).addTo(gameLayer);
+    markerh.bindTooltip(names[izr]);
+    var lineh = new L.polyline([new L.LatLng(lats[currenth], lons[currenth]), new L.LatLng(lats[izr], lons[izr])], {
+      color: 'green',
+      weight: 2
+    }).addTo(gameLayer);
+
+    currenth = izr;
+  }
+  var linek = new L.polyline([new L.LatLng(lats[currenth], lons[currenth]), new L.LatLng(lats[b], lons[b])], {
+    color: 'green',
+    weight: 2
+  });
+  circle.remove();
+  linek.on("add", function () { map.spin(false); });
+  linek.addTo(gameLayer);
+}
+
+function searchCity(lat1, lon1, currentg, difficulty, thresh) {
+  var ixr = 1;
+  var distx = 1000;
+  var dista = 2000;
+
+  while (ixr < names.length) {
+    distx = HavDist(lat1, lats[ixr], lon1, lons[ixr]);
+    dista = HavDist(lats[currentg], lats[ixr], lons[currentg], lons[ixr]);
+    if ((dista < difficulty) && (distx < thresh)) {
+      break;
+    }
+    ixr += 1;
+  }
+  // console.log(dista,distx);  
+  return ixr;
+}
+
 
 function GuessFunc() {
 
   //Get prop
   prop = document.getElementById('userinput').value;
   //get fuzz ration with every city
-  var ratios=[]
-  for (var i = 0; i<names.length; i++){
+  var ratios = []
+  for (var i = 0; i < names.length; i++) {
     ratios[i] = fuzzball.ratio(prop, names[i]);
   }
   ix = argMax(ratios);
   //seuil à ajuster
-  if(ratios[ix]<85){
+  if (ratios[ix] < 85) {
     console.log('Unknown city !');
   }
-  else{
+  else {
     //console.log(names[ix]);
-    score = score+1;
+    score = score + 1;
     document.getElementById('score').innerHTML = score;
     //distance
-    var d = HavDist(lats[ix],lats[current],lons[ix],lons[current]);
-    if(d<difficulty){
+    var d = HavDist(lats[ix], lats[current], lons[ix], lons[current]);
+    if (d < difficulty) {
       //draw green if inside circle and move circle
-      var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:greenIcon}).addTo(gameLayer);
+      var markerc = new L.Marker(new L.LatLng(lats[ix], lons[ix]), { title: names[ix], icon: greenIcon }).addTo(gameLayer);
       markerc.bindTooltip(names[ix]);
       circle.setLatLng(new L.LatLng(lats[ix], lons[ix]));
-      var line = new L.polyline([new L.LatLng(lats[current],lons[current]), new L.LatLng(lats[ix],lons[ix])]).addTo(gameLayer);
+      var line = new L.polyline([new L.LatLng(lats[current], lons[current]), new L.LatLng(lats[ix], lons[ix])]).addTo(gameLayer);
       current = ix;
       //Check if endpoint is the new circle 
-      var e = HavDist(lats[ix],lats[b],lons[ix],lons[b]);
-      if(e<difficulty){        
+      var e = HavDist(lats[ix], lats[b], lons[ix], lons[b]);
+      if (e < difficulty) {
         circle.remove();
-        var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty*1000, {color:'green'}).addTo(gameLayer);
+        var wincircle = new L.circle(new L.LatLng(lats[ix], lons[ix]), radius = difficulty * 1000, { color: 'green' }).addTo(gameLayer);
         setTimeout("alert('Good Job !! Score : ' + String(score));", 1);
       }
     }
-    else{
+    else {
       //Draw Red
-      var markerd = new L.Marker(new L.LatLng(lats[ix], lons[ix]),{title:names[ix],icon:redIcon}).addTo(gameLayer);
+      var markerd = new L.Marker(new L.LatLng(lats[ix], lons[ix]), { title: names[ix], icon: redIcon }).addTo(gameLayer);
       markerd.bindTooltip(names[ix]);
     }
   }
@@ -201,10 +266,10 @@ function ChallengeFunc() {
   var challengecode = document.getElementById('challenge-code').value;
   a = parseInt(challengecode.split('-')[0]);
   b = parseInt(challengecode.split('-')[1]);
-  difficulty = parseInt(challengecode.split('-')[2]);  
+  difficulty = parseInt(challengecode.split('-')[2]);
 
   if ((a < names.length) && (a > 0) && (b < names.length) && (b > 0) && (a != b) && (difficulty >= 5)) {
-    current=a;
+    current = a;
     //Draw    
     var markera = new L.Marker(new L.LatLng(lats[a], lons[a]), { title: names[a], icon: greenIcon }).addTo(gameLayer);
     markera.bindTooltip(names[a]);
@@ -216,9 +281,9 @@ function ChallengeFunc() {
 
     //Fill div
     document.getElementById('startV').innerHTML = names[a];
-    document.getElementById('endV').innerHTML = names[b];    
+    document.getElementById('endV').innerHTML = names[b];
   }
-  else{
+  else {
     alert('Wrong Challenge Code');
   }
 }
@@ -241,6 +306,55 @@ function HavDist(lat1, lat2, lon1, lon2) {
   var d = R * c;
   return d;
 }
+
+function bearing(lat1, lat2, lon1, lon2) {
+  startLat = lat1 * Math.PI / 180;
+  startLng = lon1 * Math.PI / 180;
+  destLat = lat2 * Math.PI / 180;
+  destLng = lon2 * Math.PI / 180;
+
+  y = Math.sin(destLng - startLng) * Math.cos(destLat);
+  x = Math.cos(startLat) * Math.sin(destLat) -
+    Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+  brng = Math.atan2(y, x);
+  brng = brng * 180 / Math.PI;
+  return (brng + 360) % 360;
+}
+
+function destVincenty(lat1, lon1, brng, dist) {
+  var a = 6378137,
+    b = 6356752.3142,
+    f = 1 / 298.257223563, // WGS-84 ellipsiod
+    s = dist,
+    alpha1 = brng * Math.PI / 180,
+    sinAlpha1 = Math.sin(alpha1),
+    cosAlpha1 = Math.cos(alpha1),
+    tanU1 = (1 - f) * Math.tan(lat1 * Math.PI / 180),
+    cosU1 = 1 / Math.sqrt((1 + tanU1 * tanU1)), sinU1 = tanU1 * cosU1,
+    sigma1 = Math.atan2(tanU1, cosAlpha1),
+    sinAlpha = cosU1 * sinAlpha1,
+    cosSqAlpha = 1 - sinAlpha * sinAlpha,
+    uSq = cosSqAlpha * (a * a - b * b) / (b * b),
+    A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq))),
+    B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq))),
+    sigma = s / (b * A),
+    sigmaP = 2 * Math.PI;
+  while (Math.abs(sigma - sigmaP) > 1e-12) {
+    var cos2SigmaM = Math.cos(2 * sigma1 + sigma),
+      sinSigma = Math.sin(sigma),
+      cosSigma = Math.cos(sigma),
+      deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+    sigmaP = sigma;
+    sigma = s / (b * A) + deltaSigma;
+  };
+  var tmp = sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1,
+    lat2 = Math.atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosAlpha1, (1 - f) * Math.sqrt(sinAlpha * sinAlpha + tmp * tmp)),
+    lambda = Math.atan2(sinSigma * sinAlpha1, cosU1 * cosSigma - sinU1 * sinSigma * cosAlpha1),
+    C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha)),
+    L = lambda - (1 - C) * f * sinAlpha * (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM))),
+    revAz = Math.atan2(sinAlpha, -tmp); // final bearing
+  return [lat2 * 180 / Math.PI, parseFloat(lon1) + (L * 180 / Math.PI)];
+};
 
 function argMax(array) {
   return [].map.call(array, (x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
