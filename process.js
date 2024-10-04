@@ -153,6 +153,7 @@ function StartFunc() {
   document.getElementById('startV').innerHTML = names[a];
   document.getElementById('endV').innerHTML = names[b];
   document.getElementById('challenge-code').value = genChallengeCode(a, b, difficulty);
+  document.getElementById('giveup').disabled = false;
 }
 
 function GiveUpPre() {
